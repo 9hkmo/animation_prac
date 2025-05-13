@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>10초간 촬영</title>
+  <style>
+    video, canvas, img { display: block; margin: 10px auto; }
+  </style>
+</head>
+<body>
+
+  <h2 style="text-align: center;">10초간 0.1초마다 캡처</h2>
+  <video id="video" width="480" height="360" autoplay muted></video>
+  <canvas id="canvas" width="480" height="360" style="display: none;"></canvas>
+  <div id="result" style="text-align: center;"></div>
+
+  <script>
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const resultDiv = document.getElementById("result");
+    const ctx = canvas.getContext("2d");
+
+    let captureInterval;
+    let captureCount = 0;
+    const maxCaptures = 100; // 100번 = 10초간
+
+    async function startCamera() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+    }
+
+    function captureFrame() {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // canvas → Blob → 이미지 미리보기 (또는 서버 전송 가능)
+      canvas.toBlob((blob) => {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(blob);
+        img.width = 120;
+        resultDiv.appendChild(img);
+
+        // 🔽 서버 전송 예시 (옵션)
+        /*
+        const formData = new FormData();
+        formData.append("image", blob, `frame_${captureCount}.webp`);
+        fetch("/upload", { method: "POST", body: formData });
+        */
+      }, "image/webp");
+
+      captureCount++;
+      if (captureCount >= maxCaptures) {
+        clearInterval(captureInterval);
+        console.log("촬영 완료");
+      }
+    }
+
+    async function startCapture() {
+      await startCamera();
+
+      setTimeout(() => {
+        captureInterval = setInterval(captureFrame, 100); // 0.1초마다 캡처
+      }, 1000); // 1초 대기 후 시작 (캠 준비 시간)
+    }
+
+    // 실행
+    startCapture();
+  </script>
+
+</body>
+</html>
