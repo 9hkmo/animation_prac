@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>랜덤 원 이동</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        background-color: black;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .circle {
+        position: absolute;
+        border-radius: 50%;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.7s ease; /* 부드럽게 이동 */
+      }
+
+      .circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // 원 크기 설정
+      const circleSize = 200; // 고정 크기 100px
+      // 이미지 배열 (클릭 시 교체될 이미지들)
+      const images = [
+        "https://wimg.heraldcorp.com/content/default/2022/01/10/20220110000083_0.jpg",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Noto_Emoji_KitKat_263a.svg/250px-Noto_Emoji_KitKat_263a.svg.png",
+      ];
+      // 랜덤 위치에 원을 생성하는 함수
+      function createRandomCircle() {
+        const circle = document.createElement("div");
+        circle.classList.add("circle");
+
+        // 고정 크기 설정
+        circle.style.width = `${circleSize}px`;
+        circle.style.height = `${circleSize}px`;
+
+        // 랜덤 위치 설정
+        const x = Math.random() * (window.innerWidth - circleSize);
+        const y = Math.random() * (window.innerHeight - circleSize);
+        circle.style.left = `${x}px`;
+        circle.style.top = `${y}px`;
+
+        // 원 안에 이미지 삽입
+        const img = document.createElement("img");
+        img.src = images[0]; // 원하는 이미지 URL로 변경
+        img.style.borderRadius = "50%";
+        img.style.scale = 0.6;
+        circle.appendChild(img);
+        
+        // 클릭 시 원이 새로운 위치로 이동
+        circle.addEventListener("click", () => {
+          img.src = images[1];
+          // 1초 후에 새로운 위치로 이동
+          setTimeout(() => {
+            img.src = images[0];
+            // 새로운 랜덤 위치로 이동
+            const newX = Math.random() * (window.innerWidth - circleSize);
+            const newY = Math.random() * (window.innerHeight - circleSize);
+            circle.style.left = `${newX}px`;
+            circle.style.top = `${newY}px`;
+          }, 300); // 0.3초 후 이동
+        });
+
+        document.body.appendChild(circle);
+      }
+
+      createRandomCircle();
+    </script>
+  </body>
+</html>
